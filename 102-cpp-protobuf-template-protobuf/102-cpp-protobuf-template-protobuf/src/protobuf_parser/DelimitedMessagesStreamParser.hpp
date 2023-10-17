@@ -8,6 +8,7 @@
 #ifndef SRC_PROTOBUF_PARSER_DELIMITEDMESSAGESSTREAMPARSER_HPP_
 #define SRC_PROTOBUF_PARSER_DELIMITEDMESSAGESSTREAMPARSER_HPP_
 #include "helpers.hpp"
+#include <list>
 
 template <typename MessageType>
 class DelimitedMessagesStreamParser
@@ -19,7 +20,8 @@ public:
 
 private:
     std::vector<char> m_buffer;
-    void addToBuffer(std::string &data){
+
+    void addToBuffer(const std::string &data){
         m_buffer.insert(m_buffer.cend(), data.cbegin(), data.cend());
     };
     void deleteFromBuffer(size_t size){
