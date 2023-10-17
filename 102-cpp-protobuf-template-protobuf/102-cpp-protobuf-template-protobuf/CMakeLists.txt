@@ -22,7 +22,8 @@ add_executable(protobuf_parser
         src/protobuf_parser/DelimitedMessagesStreamParser.hpp
         src/protobuf_parser/helpers.hpp
         ${PROTO_HDRS}
-        ${PROTO_SRCS})
+        ${PROTO_SRCS}
+        src/protobuf_parser/DelimitedMessagesStreamParser.cpp)
 
 if(WIN32 AND Protobuf_VERSION VERSION_GREATER_EQUAL 4.22.0)
     if (MSVC)
