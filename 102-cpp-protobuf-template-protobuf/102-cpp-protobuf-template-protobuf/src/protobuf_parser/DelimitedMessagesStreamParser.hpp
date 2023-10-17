@@ -7,17 +7,18 @@
 
 #ifndef SRC_PROTOBUF_PARSER_DELIMITEDMESSAGESSTREAMPARSER_HPP_
 #define SRC_PROTOBUF_PARSER_DELIMITEDMESSAGESSTREAMPARSER_HPP_
+#include "helpers.hpp"
 
 template <typename MessageType>
 class DelimitedMessagesStreamParser
 {
- public:
-  typedef std::shared_ptr<const MessageType> PointerToConstValue;
+public:
+    typedef std::shared_ptr<const MessageType> PointerToConstValue;
 
-  std::list<PointerToConstValue> parse(const std::string& data);
+    std::list<PointerToConstValue> parse(const std::string& data);
 
- private:
-  std::vector<char> m_buffer;
+private:
+    std::vector<char> m_buffer;
 };
 
 #endif /* SRC_PROTOBUF_PARSER_DELIMITEDMESSAGESSTREAMPARSER_HPP_ */
