@@ -46,54 +46,74 @@ template <typename Message> PointerToConstData serializeDelimited(const Message&
  * он не пустой.
  */
 template <typename Message>
-std::shared_ptr<Message> parseDelimited(const void* data, size_t size,
+std::shared_ptr<Message> parseDelimited(const void *data, size_t size,
                                         size_t* bytesConsumed = 0)
 {
-    if (data== nullptr){
-        //throw std::runtime_error("");
-    }
-    if (data&&size!=0){
-        std::string s= reinterpret_cast<const char *>(static_cast<const Data *>(data));
-        int sz=s.size();
-        if(sz!=size){
+    try {
+        if (data == nullptr) {
             //throw std::runtime_error("");
         }
-        auto ConstData=static_cast<const Data *>(data);
+        if (data && size != 0) {
+            std::string s = reinterpret_cast<const char *>(static_cast<const Data *>(data));
+            int sz = s.size();
+            if (sz != size) {
+                size=sz;
+            }
+            //const Data* ddata= static_cast<const Data *>(data);
 
-        Data data1(ConstData->begin(),ConstData->end());
 
-        uint32_t messageSize = 0;
-        size_t headerSize = 0;
-        std::shared_ptr<Message> res = std::make_shared<Message>(Message());
-        google::protobuf::uint8* buffer = reinterpret_cast<google::protobuf::uint8*>(&*(data1.begin()));
-        google::protobuf::io::CodedInputStream stream(buffer,size);
-        std::string str;
+            Data ddd;
 
-        if (stream.ReadVarint32(&messageSize)){
-            headerSize=google::protobuf::io::CodedOutputStream::VarintSize32(messageSize);
-        }else{
-            messageSize=0;
+            auto gaf=data;
+            auto ConstData = static_cast<const Data *>(data);
+            if (ConstData==NULL){
+                throw 1;
+            }
+
+            if (ConstData->size() != size) {
+                size = ConstData->size();
+            }
+            Data data1(ConstData->begin(), ConstData->end());
+            //Data data1(s.begin(), s.end());
+
+
+            uint32_t messageSize = 0;
+            size_t headerSize = 0;
+            std::shared_ptr<Message> res = std::make_shared<Message>(Message());
+            google::protobuf::uint8 *buffer = reinterpret_cast<google::protobuf::uint8 *>(&*(data1.begin()));
+            google::protobuf::io::CodedInputStream stream(buffer, size);
+            std::string str;
+
+            if (stream.ReadVarint32(&messageSize)) {
+                headerSize = google::protobuf::io::CodedOutputStream::VarintSize32(messageSize);
+            } else {
+                messageSize = 0;
+            }
+
+            if (stream.ReadString(&str, messageSize)) {
+                if (res->ParseFromString(str)) {
+                    if (bytesConsumed) {
+                        *bytesConsumed = headerSize + messageSize;
+                    }
+
+                    return res;
+                } else
+                    throw std::runtime_error("");
+
+
+            }
+
+
         }
 
-        if (stream.ReadString(&str, messageSize)){
-            if(res->ParseFromString(str)){
-                if (bytesConsumed)
-                {
-                    *bytesConsumed = headerSize + messageSize;
-                }
-
-                return res;
-            }else
-                throw std::runtime_error("");
-
-
+        if (bytesConsumed) {
+            *bytesConsumed = 0;
         }
-
-
+    }catch (const std::string& ex){
+        throw std::runtime_error(ex);
     }
-    if (bytesConsumed)
-    {
-        *bytesConsumed = 0;
+    catch (...){
+        throw std::runtime_error("");
     }
     return nullptr;
 }
