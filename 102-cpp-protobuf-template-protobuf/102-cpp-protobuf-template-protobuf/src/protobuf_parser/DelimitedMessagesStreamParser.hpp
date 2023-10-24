@@ -32,21 +32,19 @@ private:
 template<typename MessageType>
 typename DelimitedMessagesStreamParser<MessageType>::ParsedMsgsList DelimitedMessagesStreamParser<MessageType>::parse(
         const std::string &data) {
+
     addToBuffer(data);
-
-    std::list<PointerToConstValue> list;
+    std::list<PointerToConstValue> messages;
     size_t usedBytes = -1;
-
-    while (usedBytes != 0)
-    {
-        auto parsedMsg = parseDelimited<MessageType>(static_cast<const void*>(&m_buffer),m_buffer.size(),&usedBytes);
-        if (parsedMsg != nullptr){
-            list.push_back(parsedMsg);
+    while (usedBytes != 0) {
+        auto delimited = parseDelimited<MessageType>(static_cast<const void *>(&m_buffer), m_buffer.size(),&usedBytes);
+        if (delimited != nullptr) {
+            messages.push_back(delimited);
             deleteFromBuffer(usedBytes);
         }
-    }
 
-    return list;
+    }
+    return messages;
 }
 
 
